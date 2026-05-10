@@ -127,12 +127,12 @@ const REDLINE_RPM = 7600;
 const MAX_GEAR = 6;
 
 const GEAR_RATIOS = {
-  1: 3.4,   // Shorter 1st gear for better launch torque
-  2: 2.5,   // Shorter 2nd gear to help recover from the big RPM drop
-  3: 1.85,  // Smoothed out mid-gears
-  4: 1.4,
-  5: 1.1,
-  6: 0.85   // Top gear remains an overdrive for max speed
+  1: 4.4,   // Shorter 1st gear for better launch torque
+  2: 3.5,   // Shorter 2nd gear to help recover from the big RPM drop
+  3: 2.85,  // Smoothed out mid-gears
+  4: 2.4,
+  5: 2.1,
+  6: 1.85   // Top gear remains an overdrive for max speed
 };
 
 function roadLeft() {
