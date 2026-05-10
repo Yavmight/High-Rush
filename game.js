@@ -241,8 +241,8 @@ function createGameState() {
     player: createPlayer(),
 
     opponents: [
-      createAI(2, '#ff003c', 1.20),
-      createAI(3, '#bf00ff', 1.25),
+      createAI(2, '#e5ff00', 1.20),
+      createAI(3, '#1af307', 1.25),
     ],
 
     traffic: [],
