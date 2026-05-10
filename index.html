@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High Rush</title>
+  <meta name="description" content="Highway racer where the player drag races to obtain Rushed victory" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main id="game-wrapper">
+
+    <section id="screen-menu" class="screen active">
+      <header class="menu-header">
+        <h1 class="game-title">High Rush</h1>
+        <p class="eyebrow">Level 1: Manual Drag Race</p>
+      </header>
+
+      <div class="menu-content">
+        <p class="game-tagline">Hit the perfect RPM, shift clean, and outrun the CPU.</p>
+        <nav class="menu-buttons">
+          <button id="btn-start" class="primary-button">Start Race</button>
+          <button id="btn-controls" class="secondary-button">Controls</button>
+        </nav>
+      </div>
+    </section>
+
+    <section id="screen-controls" class="screen">
+      <header class="menu-header">
+        <h2>Controls</h2>
+      </header>
+
+      <div class="controls-list">
+        <div class="control-row"><kbd>W</kbd> <span>Accelerate / Rev</span></div>
+        <div class="control-row"><kbd>S</kbd> <span>Brake</span></div>
+        <div class="control-row"><kbd>A</kbd> <kbd>D</kbd> <span>Steer L/R</span></div>
+        <div class="control-row"><kbd>E</kbd> <span>Nitrous</span></div>
+        <div class="control-row"><kbd>Left Shift</kbd> <span>Shift Up</span></div>
+        <div class="control-row"><kbd>Left Ctrl</kbd> <span>Shift Down</span></div>
+        <div class="control-row"><kbd>R</kbd> <span>Restart</span></div>
+      </div>
+
+      <p class="tip">
+        <strong>Tip:</strong> During countdown, hold W and keep the RPM inside the green zone for a perfect launch.
+      </p>
+
+      <button id="btn-back" class="secondary-button">Back to Menu</button>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <canvas id="game-canvas" width="900" height="600">
+        Your browser does not support HTML5 Canvas.
+      </canvas>
+    </section>
+
+    <section id="screen-result" class="screen">
+      <div class="result-card">
+        <p id="result-rank-icon" class="result-icon">🏁</p>
+        <h2 id="result-title">Race Finished!</h2>
+
+        <div class="result-stats">
+          <div class="stat-row">
+            <span>Position</span>
+            <strong id="result-position">--</strong>
+          </div>
+          <div class="stat-row">
+            <span>Race Time</span>
+            <strong id="result-time">00:00.000</strong>
+          </div>
+          <div class="stat-row">
+            <span>Top Speed</span>
+            <strong id="result-top-speed">0 km/h</strong>
+          </div>
+          <div class="stat-row">
+            <span>Perfect Shifts</span>
+            <strong id="result-perfect-shifts">0</strong>
+          </div>
+          <div class="stat-row">
+            <span>Nitrous Used</span>
+            <strong id="result-nitrous-used">0%</strong>
+          </div>
+        </div>
+
+        <nav class="result-buttons">
+          <button id="btn-retry" class="primary-button">Try Again</button>
+          <button id="btn-menu" class="secondary-button">Main Menu</button>
+        </nav>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="game.js"></script>
+
+</body>
+</html>
