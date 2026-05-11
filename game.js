@@ -26,6 +26,21 @@ const resultNitrousUsed = document.getElementById('result-nitrous-used');
 console.log('Game is loaded');
 
 
+// --- NEW: ASSET LOADER ---
+const carSprites = {};
+const spriteNames = [
+  '370z', '500x', 'A4', 'Beetle', 'Corolla', 'DB9', 'F1', 'FType',
+  'Giulietta', 'Jimny', 'Logan', 'Polo', 'Sandero', 'Tipo', 'Viper'
+];
+
+spriteNames.forEach(function(name) {
+  const img = new Image();
+  img.src = `Assets/${name}.png`; // Assumes images are in your Assets folder
+  carSprites[name] = img;
+});
+
+
+
 function showScreen(screenName) {
   const screens = document.querySelectorAll('.screen');
 
@@ -202,16 +217,15 @@ function createPlayer() {
     finished: false,
     finishTime: 0,
     position: 0,
-
-    color: '#00f5ff',
-    accent: '#ff6b00'
+    
+    spriteName:'Viper' 
   };
 }
 
-function createAI(laneIndex, color, skill) {
+function createAI(laneIndex, skill, spriteName) {
   return {
     x: laneCenter(laneIndex),
-    y: canvas.height - 230,
+    y: canvas.height -  230,
     width: 44,
     height: 82,
 
@@ -225,8 +239,7 @@ function createAI(laneIndex, color, skill) {
     finishTime: 0,
     position: 0,
 
-    color: color,
-    accent: '#ffffff'
+     spriteName:spriteName
   };
 }
 
@@ -248,8 +261,10 @@ function createGameState() {
     player: createPlayer(),
 
     opponents: [
-      createAI(2, '#e5ff00', 1.20),
-      createAI(3, '#1af307', 1.25),
+      
+      createAI(2, 1.20, 'DB9' ),
+
+      createAI(3, 1.25, 'F1'),
     ],
 
     traffic: [],
@@ -360,35 +375,37 @@ function updateGame(deltaTime) {
   }
 }
 
+
 function drawGame() {
   if (!game) return;
 
- ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-const shakeX = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
-const shakeY = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
+  const shakeX = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
+  const shakeY = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
 
-ctx.save();
-ctx.translate(shakeX, shakeY);
+  ctx.save();
+  ctx.translate(shakeX, shakeY);
 
-ctx.fillStyle = '#080a10';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#080a10';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-drawRoad();
-drawTraffic();
-drawOpponents();
-drawPlayer();
+  drawRoad();
+  drawTraffic();
+  drawOpponents();
+  drawPlayer();
 
-ctx.restore();
+  ctx.restore();
 
-if (game.phase === 'race' && game.player.nitrousActive) {
-    ctx.fillStyle = 'rgba(0, 245, 255, 0.12)'; // Cyan speed tint
+  if (game.phase === 'race' && game.player.nitrousActive) {
+    ctx.fillStyle = 'rgba(0, 245, 255, 0.12)'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  drawHUD();
+  drawCountdown();
 }
 
-drawHUD();
-drawCountdown();
-}
 
 
 // Road & lanes
@@ -451,16 +468,19 @@ function drawRoad() {
 //Player and Oppenent Cars 
 function drawCar(car) {
   ctx.save();
-
   ctx.translate(car.x, car.y);
 
-  ctx.fillStyle = car.color;
-  ctx.fillRect(
-    -car.width / 2,
-    -car.height / 2,
-    car.width,
-    car.height
-  );
+  const img = carSprites[car.spriteName];
+
+  // If the image is loaded, draw it. Otherwise, draw a fallback rectangle.
+  if (img && img.complete) {
+    ctx.drawImage(img, -car.width / 2, -car.height / 2, car.width, car.height);
+  } else {
+    ctx.fillStyle = '#ff00ff'; // Bright pink fallback if image is missing
+    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+  }
+
+  ctx.restore();
 
   ctx.fillStyle = car.accent;
   ctx.fillRect(
@@ -486,6 +506,7 @@ function drawCar(car) {
   ctx.fillRect(car.width / 2 - 2, car.height / 2 - 28, 7, 16);
 
   ctx.restore();
+
 }
 
 function drawPlayer() {
@@ -911,6 +932,8 @@ function updateNitrous(deltaTime) {
 //Traffic 
 function createTrafficCar() {
   const lane = Math.floor(Math.random() * ROAD_LANES);
+  const civilianCars = ['Logan', 'Polo', 'Sandero', 'Corolla', 'Jimny', 'A4'];
+  const randomSprite = civilianCars[Math.floor(Math.random() * civilianCars.length)];
 
   return {
     x: laneCenter(lane),
@@ -918,7 +941,7 @@ function createTrafficCar() {
     width: 42,
     height: 78,
     speed: 90 + Math.random() * 45,
-    color: ['#556677', '#777755', '#665566', '#557766'][lane]
+    spriteName: randomSprite
   };
 }
 
