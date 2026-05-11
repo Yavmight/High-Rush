@@ -8,6 +8,7 @@ const startButton = document.getElementById('btn-start');
 const controlsButton = document.getElementById('btn-controls');
 const controlsPanel = document.getElementById('controls-panel');
 
+const gotItButton = document.getElementById('btn-got-it');
 
 const retryButton = document.getElementById('btn-retry');
 const menuButton = document.getElementById('btn-menu');
@@ -39,7 +40,7 @@ function showScreen(screenName) {
 }
 
 
-// Add this near your other button variables at the top:
+
 const backButton = document.getElementById('btn-back');
 
 // Replace the old controlsButton listener with this:
@@ -47,13 +48,19 @@ controlsButton.addEventListener('click', function () {
   showScreen('controls'); 
 });
 
-// Add this to handle the new back button:
+
 backButton.addEventListener('click', function() {
   showScreen('menu'); 
 });
 
 
-startButton.addEventListener('click', function () {
+
+  startButton.addEventListener('click',function(){
+  showScreen('how-to-play')
+  })
+
+
+gotItButton.addEventListener('click', function () {
   startGame();
 });
 

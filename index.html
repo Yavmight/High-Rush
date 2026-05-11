@@ -47,8 +47,37 @@
 
       <button id="btn-back" class="secondary-button">Back to Menu</button>
     </section>
+<section id="screen-how-to-play" class="screen" style="background: rgba(8, 10, 16, 0.85); z-index: 50;">
+       <div class="result-card" style="max-width: 500px;">
+         <h2>How to Play</h2>
+        
+          <div style="margin: 20px 0; text-align: left; font-size: 16px; line-height: 1.8; color: #e0e0e0;">
+           <p>🟢 <strong>:</strong> Hold <kbd>W</kbd> to rev & Keep the RPM in the green zone during Countdown.</p>
+           <p>↑ <strong>Shifting:</strong> Press <kbd>Left Shift</kbd> when the needle hits the green zone.</p>
+           <p>🔥 <strong>Nitrous:</strong> Press <kbd>E</kbd> To boost.</p>
+           <p>💥 <strong>Dodge Traffic:</strong> Crashing will instantly kill your speed & momentum.</p>
+           <p>↓ <strong> Downshift:</strong> Press <kbd>Left Ctrl</kbd> to down shift when momentum is killed.</p>
+          </div>
+
+        <button id="btn-got-it" class="primary-button" style="width: 100%;">Got it! (Start Race)</button>
+      </div>
+    </section>
 
     <section id="screen-game" class="screen">
+      <canvas id="game-canvas" width="900" height="600">
+        Your browser does not support HTML5 Canvas.
+      </canvas>
+    </section>
+
+
+
+
+
+
+
+
+
+      
       <canvas id="game-canvas" width="900" height="600">
         Your browser does not support HTML5 Canvas.
       </canvas>
@@ -88,6 +117,8 @@
         </nav>
       </div>
     </section>
+
+
 
   </main>
 
