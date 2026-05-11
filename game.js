@@ -178,12 +178,12 @@ const REDLINE_RPM = 7600;
 const MAX_GEAR = 6;
 
 const GEAR_RATIOS = {
-  1: 4.4,   // Shorter 1st gear for better launch torque
-  2: 3.5,   // Shorter 2nd gear to help recover from the big RPM drop
-  3: 2.85,  // Smoothed out mid-gears
-  4: 2.4,
-  5: 2.1,
-  6: 1.85   // Top gear remains an overdrive for max speed
+  1: 4.2,   
+  2: 3.1,   
+  3: 2.4,   
+  4: 1.9,
+  5: 1.5,
+  6: 1.2   
 };
 
 function roadLeft() {
@@ -601,8 +601,6 @@ function updatePlayerSteering(deltaTime) {
 }
 
 
-
-
 //Gauge logic (Accelaration & RPM )
 
 function updatePlayerEngine(deltaTime) {
@@ -640,7 +638,7 @@ function updatePlayerEngine(deltaTime) {
     player.speed -= 22 * deltaTime;
   }
 
-  player.speed = clamp(player.speed, 0, 260);
+  player.speed = clamp(player.speed, 0, 300);
 
   player.distance += player.speed * deltaTime;
   player.topSpeed = Math.max(player.topSpeed, player.speed);
@@ -677,18 +675,19 @@ function updatePlayerEngine(deltaTime) {
 
   // NEW: Dynamic RPM Drop based on the gear you are entering
   const rpmDrops = {
-    2: 3200, // 1st to 2nd: Massive drop, far from perfect RPM
-    3: 4200, // 2nd to 3rd: Moderate drop
-    4: 4800, // 3rd to 4th: Getting closer
-    5: 5400, // 4th to 5th: Very close to powerband
-    6: 5800  // 5th to 6th: Drops right near the perfect zone
+    2: 3200, 
+    3: 3600, // Was 4200 (Drops much harder now)
+    4: 4000, // Was 4800
+    5: 4400, // Was 5400
+    6: 4800  // Was 5800 - You really have to rev it out now!
   };
+
 
   // Apply the specific drop for the current gear
   player.rpm = rpmDrops[player.gear];
   player.shiftMessageTimer = 1.0;
 
-  player.speed = clamp(player.speed, 0, 260);
+  player.speed = clamp(player.speed, 0, 295);
 }
 
 
@@ -936,11 +935,11 @@ function updateNitrous(deltaTime) {
   if (wantsNitrous && player.nitrous > 0 && player.speed > 20) {
     player.nitrousActive = true;
 
-    player.speed += 65 * deltaTime;
-    player.nitrous -= 22 * deltaTime;
-    player.nitrousUsed += 22 * deltaTime;
+    player.speed += 150 * deltaTime;
+    player.nitrous -= 10 * deltaTime;
+    player.nitrousUsed += 10 * deltaTime;
 
-    game.cameraShake = 0.12;
+    game.cameraShake = 0.20;
   } else {
     player.nitrousActive = false;
   }
