@@ -50,25 +50,33 @@ raceMusic.volume = 0.4;
 
 // Browsers block autoplaying audio until the user clicks something.
 // This forces the menu music to start the very first time they click anywhere on the page.
+// Wakes up the audio on the player's very first click anywhere
 document.body.addEventListener('click', function() {
-  if (menuMusic.paused && document.getElementById('screen-menu').classList.contains('active')) {
-    menuMusic.play().catch(e => {}); // catch() hides the red error if the file is missing
+  if (menuMusic.paused && !document.getElementById('screen-game').classList.contains('active')) {
+    menuMusic.play().catch(e => {});
   }
-}, { once: true });
+});
 
 
 
 function showScreen(screenName) {
   const screens = document.querySelectorAll('.screen');
 
-
   screens.forEach(function (screen) {
     screen.classList.remove('active');
   });
 
-
   const selectedScreen = document.getElementById(`screen-${screenName}`);
   selectedScreen.classList.add('active');
+
+  
+  if (screenName === 'game') {
+    menuMusic.pause();
+    raceMusic.play().catch(e => {});
+  } else {
+    raceMusic.pause();
+    menuMusic.play().catch(e => {});
+  }
 }
 
 
@@ -92,13 +100,7 @@ backButton.addEventListener('click', function() {
   })
 
 
-gotItButton.addEventListener('click', function () {
-  
-  menuMusic.pause();
-  menuMusic.currentTime = 0;
-
-  raceMusic.play().catch(e => {})
-  
+gotItButton.addEventListener('click', function () {  
   startGame();
 });
 
@@ -110,18 +112,10 @@ retryButton.addEventListener('click', function () {
 
 menuButton.addEventListener('click', function () {
 if (animationId !== null) {
-
-  cancelAnimationFrame(animationId); 
-  animationId=null;
-}
-
-raceMusic.pause();
-  raceMusic.currentTime = 0;
-  
-  // Start Menu Music
-  menuMusic.play().catch(e => {});
-
-showScreen('menu');
+    cancelAnimationFrame(animationId); 
+    animationId = null;
+  }
+  showScreen('menu');
 });
 
 
