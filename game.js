@@ -191,8 +191,8 @@ function createPlayer() {
   return {
     x: laneCenter(1),
     y: canvas.height - 120,
-    width: 46,
-    height: 86,
+    width: 60,
+    height: 112,
 
     speed: 0,
     topSpeed: 0,
@@ -226,8 +226,8 @@ function createAI(laneIndex, skill, spriteName) {
   return {
     x: laneCenter(laneIndex),
     y: canvas.height -  230,
-    width: 44,
-    height: 82,
+    width: 58,
+    height: 108,
 
     speed: 0,
     distance: 0,
@@ -938,8 +938,8 @@ function createTrafficCar() {
   return {
     x: laneCenter(lane),
     y: -100,
-    width: 42,
-    height: 78,
+    width: 56,
+    height: 104,
     speed: 90 + Math.random() * 45,
     spriteName: randomSprite
   };
@@ -978,9 +978,18 @@ function drawTraffic() {
 //collision:Traffic & opponent
 
 function rectanglesCollide(a, b) {
+  // Shrink the collision box to 75% of the visual image size
+  // This ignores the transparent pixels and side mirrors
+  const shrink = 0.75; 
+
+  const aHitWidth = a.width * shrink;
+  const aHitHeight = a.height * shrink;
+  const bHitWidth = b.width * shrink;
+  const bHitHeight = b.height * shrink;
+
   return (
-    Math.abs(a.x - b.x) < (a.width + b.width) / 2 &&
-    Math.abs(a.y - b.y) < (a.height + b.height) / 2
+    Math.abs(a.x - b.x) < (aHitWidth + bHitWidth) / 2 &&
+    Math.abs(a.y - b.y) < (aHitHeight + bHitHeight) / 2
   );
 }
 
