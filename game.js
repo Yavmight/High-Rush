@@ -793,7 +793,7 @@ function drawHUD() {
   const player = game.player;
 
   ctx.fillStyle = 'white';
-  ctx.font = '18px Press Start 2P';
+  ctx.font = "18px 'Press Start 2P'";
   ctx.textAlign = 'left';
 
   ctx.fillText(`Speed: ${Math.round(player.speed)} km/h`, 24, 34);
@@ -817,14 +817,14 @@ function drawHUD() {
   );
 
   ctx.fillStyle = '#00ff88';
-  ctx.font = '12px Press Start 2P';
+  ctx.font = "12px 'Press Start 2P'";
   ctx.fillText('Perfect RPM Zone', 24, 174);
 
   const progress = clamp(player.distance / RACE_DISTANCE, 0, 1);
   drawBar(canvas.width / 2 - 160, 24, 320, 16, progress, '#ff6b00', '#222222');
 
   ctx.fillStyle = 'white';
-  ctx.font = '13px Press Start 2P';
+  ctx.font = "13px  'Press Start 2P' ";
   ctx.textAlign = 'center';
   ctx.fillText(
     `${Math.round(player.distance)} / ${RACE_DISTANCE} m`,
@@ -840,7 +840,7 @@ function drawHUD() {
   ctx.fillText('Nitrous', 24, 224);
 
   if (player.shiftMessageTimer > 0) {
-    ctx.font = '28px Press Start 2P';
+    ctx.font = "28px 'Press Start 2P'";
     ctx.textAlign = 'center';
 
     if (
@@ -877,7 +877,7 @@ function drawCountdown() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.font = 'bold 90px Press Start 2P';
+  ctx.font = "bold 90px 'Press Start 2P'";
   ctx.textAlign = 'center';
   ctx.fillStyle = '#00f5ff';
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
