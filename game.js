@@ -26,7 +26,7 @@ const resultNitrousUsed = document.getElementById('result-nitrous-used');
 console.log('Game is loaded');
 
 
-// --- NEW: ASSET LOADER ---
+
 const carSprites = {};
 const spriteNames = [
   '370z', '500x', 'A4', 'Beetle', 'Corolla', 'DB9', 'F1', 'FType',
@@ -35,9 +35,26 @@ const spriteNames = [
 
 spriteNames.forEach(function(name) {
   const img = new Image();
-  img.src = `Assets/${name}.png`; // Assumes images are in your Assets folder
+  img.src = `Assets/${name}.png`; 
   carSprites[name] = img;
 });
+
+// --- MUSIC SETUP ---
+const menuMusic = new Audio('Assets/menu-music.mp3');
+menuMusic.loop = true;
+menuMusic.volume = 0.4;
+
+const raceMusic = new Audio('Assets/race-music.mp3');
+raceMusic.loop = true;
+raceMusic.volume = 0.4;
+
+// Browsers block autoplaying audio until the user clicks something.
+// This forces the menu music to start the very first time they click anywhere on the page.
+document.body.addEventListener('click', function() {
+  if (menuMusic.paused && document.getElementById('screen-menu').classList.contains('active')) {
+    menuMusic.play().catch(e => {}); // catch() hides the red error if the file is missing
+  }
+}, { once: true });
 
 
 
@@ -76,6 +93,12 @@ backButton.addEventListener('click', function() {
 
 
 gotItButton.addEventListener('click', function () {
+  
+  menuMusic.pause();
+  menuMusic.currentTime = 0;
+
+  raceMusic.play().catch(e => {})
+  
   startGame();
 });
 
@@ -91,6 +114,12 @@ if (animationId !== null) {
   cancelAnimationFrame(animationId); 
   animationId=null;
 }
+
+raceMusic.pause();
+  raceMusic.currentTime = 0;
+  
+  // Start Menu Music
+  menuMusic.play().catch(e => {});
 
 showScreen('menu');
 });
@@ -680,21 +709,22 @@ function updatePlayerEngine(deltaTime) {
 }
 
 function updateGearInput() {
-  if (keys.ShiftLeft && !shiftUpLocked) {
+  
+  if (keys.ArrowUp && !shiftUpLocked) {
     shiftUp();
     shiftUpLocked = true;
   }
 
-  if (!keys.ShiftLeft) {
+  if (!keys.ArrowUp) {
     shiftUpLocked = false;
   }
 
-  if (keys.ControlLeft && !shiftDownLocked) {
+  if (keys.ArrowDown && !shiftDownLocked) {
     shiftDown();
     shiftDownLocked = true;
   }
 
-  if (!keys.ControlLeft) {
+  if (!keys.ArrowDown) {
     shiftDownLocked = false;
   }
 }
@@ -763,7 +793,7 @@ function drawHUD() {
   const player = game.player;
 
   ctx.fillStyle = 'white';
-  ctx.font = '18px Arial';
+  ctx.font = '18px Press Start 2P';
   ctx.textAlign = 'left';
 
   ctx.fillText(`Speed: ${Math.round(player.speed)} km/h`, 24, 34);
@@ -787,14 +817,14 @@ function drawHUD() {
   );
 
   ctx.fillStyle = '#00ff88';
-  ctx.font = '12px Arial';
+  ctx.font = '12px Press Start 2P';
   ctx.fillText('Perfect RPM Zone', 24, 174);
 
   const progress = clamp(player.distance / RACE_DISTANCE, 0, 1);
   drawBar(canvas.width / 2 - 160, 24, 320, 16, progress, '#ff6b00', '#222222');
 
   ctx.fillStyle = 'white';
-  ctx.font = '13px Arial';
+  ctx.font = '13px Press Start 2P';
   ctx.textAlign = 'center';
   ctx.fillText(
     `${Math.round(player.distance)} / ${RACE_DISTANCE} m`,
@@ -810,7 +840,7 @@ function drawHUD() {
   ctx.fillText('Nitrous', 24, 224);
 
   if (player.shiftMessageTimer > 0) {
-    ctx.font = '28px Arial';
+    ctx.font = '28px Press Start 2P';
     ctx.textAlign = 'center';
 
     if (
@@ -847,18 +877,10 @@ function drawCountdown() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.font = 'bold 90px Arial';
+  ctx.font = 'bold 90px Press Start 2P';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#00f5ff';
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-  ctx.font = '20px Arial';
-  ctx.fillStyle = '#ffe600';
-  ctx.fillText(
-    'Hold W and keep RPM inside the green zone',
-    canvas.width / 2,
-    canvas.height / 2 + 55
-  );
 
   ctx.restore();
 }
