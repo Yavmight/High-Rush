@@ -328,8 +328,7 @@ function updateGame(deltaTime) {
     updateOpponents(deltaTime);
     updateTraffic(deltaTime);
     checkCollisions();
-    
-    
+  
     
     checkFinish(); 
 
@@ -343,6 +342,15 @@ function updateGame(deltaTime) {
   if (game.cameraShake > 0) {
     game.cameraShake -= deltaTime;
   }
+
+  if (game.phase === 'race' && game.player.speed > 220) {
+    
+    game.cameraShake = Math.max(game.cameraShake, 0.08); 
+  }
+
+  if (game.cameraShake > 0) {
+    game.cameraShake -= deltaTime;
+  }
 }
 
 function drawGame() {
@@ -350,8 +358,8 @@ function drawGame() {
 
  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-const shakeX = game.cameraShake > 0 ? (Math.random() - 0.5) * 8 : 0;
-const shakeY = game.cameraShake > 0 ? (Math.random() - 0.5) * 8 : 0;
+const shakeX = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
+const shakeY = game.cameraShake > 0 ? (Math.random() - 0.5) * 14 : 0;
 
 ctx.save();
 ctx.translate(shakeX, shakeY);
@@ -365,6 +373,11 @@ drawOpponents();
 drawPlayer();
 
 ctx.restore();
+
+if (game.phase === 'race' && game.player.nitrousActive) {
+    ctx.fillStyle = 'rgba(0, 245, 255, 0.12)'; // Cyan speed tint
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 drawHUD();
 drawCountdown();
@@ -472,7 +485,17 @@ function drawPlayer() {
   const player = game.player;
 
   if (player.nitrousActive) {
-    ctx.fillStyle = 'rgba(0, 255, 136, 0.65)';
+    
+    ctx.globalAlpha = 0.4;
+    drawCar({ ...player, y: player.y + 25 }); // First ghost
+    
+    ctx.globalAlpha = 0.15;
+    drawCar({ ...player, y: player.y + 50 }); // Second ghost
+    
+    // Reset alpha so the main car draws normally
+    ctx.globalAlpha = 1.0;
+    
+    ctx.fillStyle = 'rgba(216, 73, 1, 0.9)';
     ctx.beginPath();
     ctx.moveTo(player.x - 14, player.y + player.height / 2);
     ctx.lineTo(player.x, player.y + player.height / 2 + 42);
@@ -689,8 +712,10 @@ function updateCountdown(deltaTime) {
       // NEW: Engine chokes on an over-rev (spinning tires)
       player.rpm = 2500; 
       player.launchMessage = 'OVER REV';
-    }
-
+    }    
+    player.launchChecked = true;
+    player.shiftMessageTimer = 1.2;
+    player.lastShiftMessage = player.launchMessage;
   }
 } 
     //HUD 
