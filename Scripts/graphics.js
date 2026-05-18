@@ -84,10 +84,56 @@ function drawRoad() {
   }
 }
 
+
+
+//Player and Oppenent Cars 
+function drawCar(car) {
+  ctx.save();
+  ctx.translate(car.x, car.y);
+
+  const img = carSprites[car.spriteName];
+
+  // If the image is loaded, draw it. Otherwise, draw a fallback rectangle.
+  if (img && img.complete) {
+    ctx.drawImage(img, -car.width / 2, -car.height / 2, car.width, car.height);
+  } else {
+    ctx.fillStyle = '#ff00ff'; // Bright pink fallback if image is missing
+    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+  }
+
+  ctx.restore();
+
+  ctx.fillStyle = car.accent;
+  ctx.fillRect(
+    -car.width / 2 + 7,
+    -car.height / 2 + 8,
+    car.width - 14,
+    10
+  );
+
+  ctx.fillStyle = 'rgba(180, 240, 255, 0.75)';
+  ctx.fillRect(
+    -car.width / 2 + 8,
+    -car.height / 2 + 24,
+    car.width - 16,
+    18
+  );
+
+  ctx.fillStyle = '#111111';
+
+  ctx.fillRect(-car.width / 2 - 5, -car.height / 2 + 10, 7, 16);
+  ctx.fillRect(car.width / 2 - 2, -car.height / 2 + 10, 7, 16);
+  ctx.fillRect(-car.width / 2 - 5, car.height / 2 - 28, 7, 16);
+  ctx.fillRect(car.width / 2 - 2, car.height / 2 - 28, 7, 16);
+
+  ctx.restore();
+
+}
+
+
 //Player 
 function drawPlayer(player, cameraShake) {
-  const player = game.player;
-
+  
   if (player.nitrousActive) {
     
     ctx.globalAlpha = 0.4;

@@ -256,7 +256,7 @@ let animationId = null;
 let lastFrameTime = 0;
 
 
-// Game Loop
+// Start Game & Game Loop
 function startGame() {
   keys.KeyW = false;
   keys.KeyS = false;
@@ -281,6 +281,8 @@ function startGame() {
   animationId = requestAnimationFrame(gameLoop);
 }
 
+
+
 function gameLoop(currentTime) {
   
   if (!game || game.phase === 'finished') return; 
@@ -298,22 +300,7 @@ function gameLoop(currentTime) {
 }
 
 
-function gameLoop(currentTime) {
- 
-  if (!game || game.phase === 'finished') return; 
 
-  const deltaTime = Math.min((currentTime - lastFrameTime) / 1000, 0.05);
-  lastFrameTime = currentTime;
-
-  updateGame(deltaTime);
-  
-  
-  if (game.phase === 'finished') return;
-
-  drawGame();
-
-  animationId = requestAnimationFrame(gameLoop);
-}
 
 function updateGame(deltaTime) {
   if (game.phase === 'countdown') {
@@ -355,56 +342,13 @@ function updateGame(deltaTime) {
 }
 
 
-//Player and Oppenent Cars 
-function drawCar(car) {
-  ctx.save();
-  ctx.translate(car.x, car.y);
-
-  const img = carSprites[car.spriteName];
-
-  // If the image is loaded, draw it. Otherwise, draw a fallback rectangle.
-  if (img && img.complete) {
-    ctx.drawImage(img, -car.width / 2, -car.height / 2, car.width, car.height);
-  } else {
-    ctx.fillStyle = '#ff00ff'; // Bright pink fallback if image is missing
-    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
-  }
-
-  ctx.restore();
-
-  ctx.fillStyle = car.accent;
-  ctx.fillRect(
-    -car.width / 2 + 7,
-    -car.height / 2 + 8,
-    car.width - 14,
-    10
-  );
-
-  ctx.fillStyle = 'rgba(180, 240, 255, 0.75)';
-  ctx.fillRect(
-    -car.width / 2 + 8,
-    -car.height / 2 + 24,
-    car.width - 16,
-    18
-  );
-
-  ctx.fillStyle = '#111111';
-
-  ctx.fillRect(-car.width / 2 - 5, -car.height / 2 + 10, 7, 16);
-  ctx.fillRect(car.width / 2 - 2, -car.height / 2 + 10, 7, 16);
-  ctx.fillRect(-car.width / 2 - 5, car.height / 2 - 28, 7, 16);
-  ctx.fillRect(car.width / 2 - 2, car.height / 2 - 28, 7, 16);
-
-  ctx.restore();
-
-}
 
 
 //player Steering and  Road Boundaries  
 
 function updatePlayerSteering(deltaTime) {
   const player = game.player;
-  const steeringSpeed = 260;
+  const steeringSpeed = PLAYER_STEER_SPEED;
 
   if (keys.KeyA || keys.ArrowLeft) {
     player.x -= steeringSpeed * deltaTime;
@@ -648,7 +592,7 @@ function updateNitrous(deltaTime) {
   if (wantsNitrous && player.nitrous > 0 && player.speed > 20) {
     player.nitrousActive = true;
 
-    player.speed += 150 * deltaTime;
+    player.speed += NITROUS_BOOST * deltaTime;
     player.nitrous -= 10 * deltaTime;
     player.nitrousUsed += 10 * deltaTime;
 
@@ -707,7 +651,7 @@ function updateTraffic(deltaTime) {
 function rectanglesCollide(a, b) {
   // Shrink the collision box to 75% of the visual image size
   // This ignores the transparent pixels and side mirrors
-  const shrink = 0.75; 
+  const shrink = HITBOX_SHRINK; 
 
   const aHitWidth = a.width * shrink;
   const aHitHeight = a.height * shrink;

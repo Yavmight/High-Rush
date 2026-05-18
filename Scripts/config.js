@@ -47,7 +47,7 @@ const GEAR_RATIOS = {
   6: 1.2   
 };
 
-// Gameplay config
+// Gameplay configs
 const PLAYER_STEER_SPEED = 260;
 const PLAYER_ACCEL_BASE = 3000;
 const PLAYER_BRAKE_POWER = 1600;
