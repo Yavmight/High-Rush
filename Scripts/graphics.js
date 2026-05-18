@@ -14,9 +14,9 @@ function drawGame() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawRoad();
-  drawTraffic();
-  drawOpponents();
-  drawPlayer();
+  drawTraffic(game.traffic);
+  drawOpponents(game.opponents, game.player.distance, game.player.y);
+  drawPlayer(game.player, game.cameraShake);
 
   ctx.restore();
 
@@ -85,7 +85,7 @@ function drawRoad() {
 }
 
 //Player 
-function drawPlayer() {
+function drawPlayer(player, cameraShake) {
   const player = game.player;
 
   if (player.nitrousActive) {
@@ -111,29 +111,20 @@ function drawPlayer() {
 }
 
 //Opponents 
-function drawOpponents() {
-  const playerDistance = game.player.distance;
+function drawOpponents(opponents, playerDistance, playerY) {
+  
+  opponents.forEach(function (opponent) {
+    const screenY = playerY + (playerDistance - opponent.distance) * 0.45;
 
-  game.opponents.forEach(function (opponent) {
-    const screenY = game.player.y + (playerDistance - opponent.distance) * 0.45;
-
-    const visibleOpponent = {
-      ...opponent,
-      y: screenY
-    };
-
-    drawCar(visibleOpponent);
+    drawCar({...opponent, y: screenY});
   });
 }
 
 
 //traffic cars 
-function drawTraffic() {
-  game.traffic.forEach(function (trafficCar) {
-    drawCar({
-      ...trafficCar,
-      accent: '#333333'
-    });
+function drawTraffic(trafficArray) {
+  trafficArray.forEach(function (trafficCar) {
+    drawCar({ ...trafficCar, accent: '#333333' });
   });
 }
 

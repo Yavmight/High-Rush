@@ -46,3 +46,10 @@ const GEAR_RATIOS = {
   5: 1.5,
   6: 1.2   
 };
+
+// Gameplay config
+const PLAYER_STEER_SPEED = 260;
+const PLAYER_ACCEL_BASE = 3000;
+const PLAYER_BRAKE_POWER = 1600;
+const NITROUS_BOOST = 150;
+const HITBOX_SHRINK = 0.75;
