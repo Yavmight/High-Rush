@@ -1,49 +1,71 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const pool = require('../db');
+const { createUser, loginUser } = require("../services/authService");
 
 const registerUser = async (req, res) => {
-    try {
-        const { username, password } = req.body;
+  const { username, password } = req.body;
 
-        //  validation [cite: 44]
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Username and password are required' });
-        }
+  if (!username || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
 
-        // user existence check
-        const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (userCheck.rows.length > 0) {
-            return res.status(409).json({ error: 'Username already taken' });
-        }
+  try {
+    const user = await createUser(username, password);
 
-        // password hash
-        const saltRounds = 10;
-        const passwordHash = await bcrypt.hash(password, saltRounds);
-
-        // database save
-        const newUser = await pool.query(
-            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username',
-            [username, passwordHash]
-        );
-
-        // JWT Generation
-        const token = jwt.sign(
-            { id: newUser.rows[0].id, username: newUser.rows[0].username },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        res.status(201).json({ 
-            message: 'User registered successfully',
-            token: token,
-            user: newUser.rows[0]
-        });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ error: 'Server error during registration' });
+    return res.status(201).json({
+      message: "User created successfully",
+      userId: user.id,
+    });
+  } catch (error) {
+    if (error.message === "USER_ALREADY_EXISTS") {
+      return res.status(409).json({
+        message: "User with this username already exists",
+      });
     }
+    return res.status(500).json({ error: error.message });
+  }
 };
 
-module.exports = { registerUser };
+const handleLogin = async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const result = await loginUser(username, password);
+
+    const { token, user } = result;
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      message: "Login successful",
+      user,
+    });
+  } catch (error) {
+    if (error.message === "INVALID_CREDENTIALS") {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+const logoutUser = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  return res.status(200).json({
+    message: "logout successful",
+  });
+};
+
+module.exports = { handleLogin, registerUser, logoutUser };
