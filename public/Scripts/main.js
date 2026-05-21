@@ -1,140 +1,123 @@
-'use strict';
+"use strict";
 
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
+if (!localStorage.getItem("high_rush_user")) {
+  window.location.href = "/login.html";
+}
 
+const canvas = document.getElementById("game-canvas");
+const ctx = canvas.getContext("2d");
 
-const startButton = document.getElementById('btn-start');
-const controlsButton = document.getElementById('btn-controls');
-const controlsPanel = document.getElementById('controls-panel');
+const startButton = document.getElementById("btn-start");
+const controlsButton = document.getElementById("btn-controls");
+const controlsPanel = document.getElementById("controls-panel");
 
-const gotItButton = document.getElementById('btn-got-it');
+const gotItButton = document.getElementById("btn-got-it");
 
-const retryButton = document.getElementById('btn-retry');
-const menuButton = document.getElementById('btn-menu');
+const retryButton = document.getElementById("btn-retry");
+const menuButton = document.getElementById("btn-menu");
 
+const resultIcon = document.getElementById("result-rank-icon");
+const resultTitle = document.getElementById("result-title");
+const resultPosition = document.getElementById("result-position");
+const resultTime = document.getElementById("result-time");
+const resultTopSpeed = document.getElementById("result-top-speed");
+const resultPerfectShifts = document.getElementById("result-perfect-shifts");
+const resultNitrousUsed = document.getElementById("result-nitrous-used");
 
-const resultIcon = document.getElementById('result-rank-icon');
-const resultTitle = document.getElementById('result-title');
-const resultPosition = document.getElementById('result-position');
-const resultTime = document.getElementById('result-time');
-const resultTopSpeed = document.getElementById('result-top-speed');
-const resultPerfectShifts = document.getElementById('result-perfect-shifts');
-const resultNitrousUsed = document.getElementById('result-nitrous-used');
+console.log("Game is loaded");
 
-
-console.log('Game is loaded');
-
-
-
-// Browsers block autoplaying audio until the user clicks something.
-// This forces the menu music to start the very first time they click anywhere on the page.
-// Wakes up the audio on the player's very first click anywhere
-document.body.addEventListener('click', function() {
-  if (menuMusic.paused && !document.getElementById('screen-game').classList.contains('active')) {
-    menuMusic.play().catch(e => {});
+document.body.addEventListener("click", function () {
+  if (
+    menuMusic.paused &&
+    !document.getElementById("screen-game").classList.contains("active")
+  ) {
+    menuMusic.play().catch((e) => {});
   }
 });
 
-
-
 function showScreen(screenName) {
-  const screens = document.querySelectorAll('.screen');
+  const screens = document.querySelectorAll(".screen");
 
   screens.forEach(function (screen) {
-    screen.classList.remove('active');
+    screen.classList.remove("active");
   });
 
   const selectedScreen = document.getElementById(`screen-${screenName}`);
-  selectedScreen.classList.add('active');
+  selectedScreen.classList.add("active");
 
-  
-  if (screenName === 'game') {
+  if (screenName === "game") {
     menuMusic.pause();
-    raceMusic.play().catch(e => {});
+    raceMusic.play().catch((e) => {});
   } else {
     raceMusic.pause();
-    menuMusic.play().catch(e => {});
+    menuMusic.play().catch((e) => {});
   }
 }
 
+const backButton = document.getElementById("btn-back");
 
-
-const backButton = document.getElementById('btn-back');
-
-// Replace the old controlsButton listener with this:
-controlsButton.addEventListener('click', function () {
-  showScreen('controls'); 
+controlsButton.addEventListener("click", function () {
+  showScreen("controls");
 });
 
-
-backButton.addEventListener('click', function() {
-  showScreen('menu'); 
+backButton.addEventListener("click", function () {
+  showScreen("menu");
 });
 
+startButton.addEventListener("click", function () {
+  showScreen("how-to-play");
+});
 
-
-  startButton.addEventListener('click',function(){
-  showScreen('how-to-play')
-  })
-
-
-gotItButton.addEventListener('click', function () {  
+gotItButton.addEventListener("click", function () {
   startGame();
 });
 
-
-retryButton.addEventListener('click', function () {
+retryButton.addEventListener("click", function () {
   startGame();
 });
 
-
-menuButton.addEventListener('click', function () {
-if (animationId !== null) {
-    cancelAnimationFrame(animationId); 
+menuButton.addEventListener("click", function () {
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
     animationId = null;
   }
-  showScreen('menu');
+  showScreen("menu");
 });
-
 
 const keys = {};
 let shiftUpLocked = false;
 let shiftDownLocked = false;
 
-window.addEventListener('keydown', function (event) {
+window.addEventListener("keydown", function (event) {
   keys[event.code] = true;
 
-if (event.code === 'KeyR' && game) {
-  startGame();
-}
+  if (event.code === "KeyR" && game) {
+    startGame();
+  }
 
   const blockedKeys = [
-    'KeyW',
-    'KeyS',
-    'KeyA',
-    'KeyD',
-    'KeyE',
-    'ShiftLeft',
-    'ControlLeft',
-    'ArrowUp',
-    'ArrowDown',
-    'ArrowLeft',
-    'ArrowRight',
-    'Space'
+    "KeyW",
+    "KeyS",
+    "KeyA",
+    "KeyD",
+    "KeyE",
+    "ShiftLeft",
+    "ControlLeft",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "Space",
   ];
-
 
   if (blockedKeys.includes(event.code)) {
     event.preventDefault();
   }
 });
 
-
-window.addEventListener('keyup', function (event) {
+window.addEventListener("keyup", function (event) {
   keys[event.code] = false;
 });
-
 
 function roadLeft() {
   return (canvas.width - ROAD_WIDTH) / 2;
@@ -157,15 +140,13 @@ function isInPerfectRPM(rpm) {
 }
 
 function formatTime(seconds) {
-  const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const secs = String(Math.floor(seconds % 60)).padStart(2, '0');
-  const millis = String(Math.floor((seconds % 1) * 1000)).padStart(3, '0');
+  const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const secs = String(Math.floor(seconds % 60)).padStart(2, "0");
+  const millis = String(Math.floor((seconds % 1) * 1000)).padStart(3, "0");
 
   return `${minutes}:${secs}.${millis}`;
 }
 
-
-//  player  and oppenent state
 function createPlayer() {
   return {
     x: laneCenter(1),
@@ -186,25 +167,25 @@ function createPlayer() {
     nitrousActive: false,
 
     perfectShifts: 0,
-    lastShiftMessage: '',
+    lastShiftMessage: "",
     shiftMessageTimer: 0,
 
     launchChecked: false,
-    launchMessage: '',
+    launchMessage: "",
     launchBoost: 1,
 
     finished: false,
     finishTime: 0,
     position: 0,
-    
-    spriteName:'Viper' 
+
+    spriteName: "Viper",
   };
 }
 
 function createAI(laneIndex, skill, spriteName) {
   return {
     x: laneCenter(laneIndex),
-    y: canvas.height -  230,
+    y: canvas.height - 230,
     width: 58,
     height: 108,
 
@@ -218,16 +199,15 @@ function createAI(laneIndex, skill, spriteName) {
     finishTime: 0,
     position: 0,
 
-     spriteName:spriteName
+    spriteName: spriteName,
   };
 }
-
 
 // Game state Factory
 
 function createGameState() {
   return {
-    phase: 'countdown',
+    phase: "countdown",
 
     time: 0,
     countdown: 3.5,
@@ -239,22 +219,16 @@ function createGameState() {
 
     player: createPlayer(),
 
-    opponents: [
-      
-      createAI(2, 1.20, 'DB9' ),
-
-      createAI(3, 1.25, 'F1'),
-    ],
+    opponents: [createAI(2, 1.2, "DB9"), createAI(3, 1.25, "F1")],
 
     traffic: [],
-    trafficTimer: 1.6
+    trafficTimer: 1.6,
   };
 }
 
 let game = null;
 let animationId = null;
 let lastFrameTime = 0;
-
 
 // Start Game & Game Loop
 function startGame() {
@@ -271,7 +245,7 @@ function startGame() {
 
   game = createGameState();
 
-  showScreen('game');
+  showScreen("game");
 
   if (animationId !== null) {
     cancelAnimationFrame(animationId);
@@ -281,32 +255,25 @@ function startGame() {
   animationId = requestAnimationFrame(gameLoop);
 }
 
-
-
 function gameLoop(currentTime) {
-  
-  if (!game || game.phase === 'finished') return; 
+  if (!game || game.phase === "finished") return;
 
   const deltaTime = Math.min((currentTime - lastFrameTime) / 1000, 0.05);
   lastFrameTime = currentTime;
 
   updateGame(deltaTime);
-  
-  if (game.phase === 'finished') return;
+
+  if (game.phase === "finished") return;
 
   drawGame();
 
   animationId = requestAnimationFrame(gameLoop);
 }
 
-
-
-
 function updateGame(deltaTime) {
-  if (game.phase === 'countdown') {
+  if (game.phase === "countdown") {
     updateCountdown(deltaTime);
-  } 
-  else if (game.phase === 'race') {
+  } else if (game.phase === "race") {
     game.time += deltaTime;
 
     updateGearInput();
@@ -316,9 +283,8 @@ function updateGame(deltaTime) {
     updateOpponents(deltaTime);
     updateTraffic(deltaTime);
     checkCollisions();
-  
-    
-    checkFinish(); 
+
+    checkFinish();
 
     if (game.player.shiftMessageTimer > 0) {
       game.player.shiftMessageTimer -= deltaTime;
@@ -331,9 +297,8 @@ function updateGame(deltaTime) {
     game.cameraShake -= deltaTime;
   }
 
-  if (game.phase === 'race' && game.player.speed > 220) {
-    
-    game.cameraShake = Math.max(game.cameraShake, 0.08); 
+  if (game.phase === "race" && game.player.speed > 220) {
+    game.cameraShake = Math.max(game.cameraShake, 0.08);
   }
 
   if (game.cameraShake > 0) {
@@ -341,10 +306,7 @@ function updateGame(deltaTime) {
   }
 }
 
-
-
-
-//player Steering and  Road Boundaries  
+//player Steering and  Road Boundaries
 
 function updatePlayerSteering(deltaTime) {
   const player = game.player;
@@ -363,7 +325,6 @@ function updatePlayerSteering(deltaTime) {
 
   player.x = clamp(player.x, minX, maxX);
 }
-
 
 //Gauge logic (Accelaration & RPM )
 
@@ -392,7 +353,7 @@ function updatePlayerEngine(deltaTime) {
   let targetSpeed = 0;
 
   if (accelerating) {
-    targetSpeed = rpmPower * 82 * player.gear / gearRatio;
+    targetSpeed = (rpmPower * 82 * player.gear) / gearRatio;
     targetSpeed *= player.launchBoost;
   }
 
@@ -406,18 +367,14 @@ function updatePlayerEngine(deltaTime) {
 
   player.distance += player.speed * deltaTime;
   player.topSpeed = Math.max(player.topSpeed, player.speed);
-} 
-
-
-  
+}
 
 // ******Manual Shifting Logic ******
 
-
 // Upshift
- 
- function shiftUp() {
-  if (!game || game.phase !== 'race') return;
+
+function shiftUp() {
+  if (!game || game.phase !== "race") return;
 
   const player = game.player;
 
@@ -426,26 +383,25 @@ function updatePlayerEngine(deltaTime) {
   if (isInPerfectRPM(player.rpm)) {
     player.speed += 18;
     player.perfectShifts += 1;
-    player.lastShiftMessage = 'PERFECT SHIFT';
+    player.lastShiftMessage = "PERFECT SHIFT";
   } else if (player.rpm < PERFECT_RPM_MIN) {
     player.speed -= 8;
-    player.lastShiftMessage = 'EARLY SHIFT';
+    player.lastShiftMessage = "EARLY SHIFT";
   } else {
     player.speed -= 12;
-    player.lastShiftMessage = 'LATE SHIFT';
+    player.lastShiftMessage = "LATE SHIFT";
   }
 
   player.gear += 1;
 
   // NEW: Dynamic RPM Drop based on the gear you are entering
   const rpmDrops = {
-    2: 3200, 
+    2: 3200,
     3: 3600, // Was 4200 (Drops much harder now)
     4: 4000, // Was 4800
     5: 4400, // Was 5400
-    6: 4800  // Was 5800 - You really have to rev it out now!
+    6: 4800, // Was 5800 - You really have to rev it out now!
   };
-
 
   // Apply the specific drop for the current gear
   player.rpm = rpmDrops[player.gear];
@@ -454,10 +410,9 @@ function updatePlayerEngine(deltaTime) {
   player.speed = clamp(player.speed, 0, 295);
 }
 
-
-//downshift 
- function shiftDown() {
-  if (!game || game.phase !== 'race') return;
+//downshift
+function shiftDown() {
+  if (!game || game.phase !== "race") return;
 
   const player = game.player;
 
@@ -467,12 +422,11 @@ function updatePlayerEngine(deltaTime) {
   player.rpm += 1200;
   player.rpm = clamp(player.rpm, RPM_IDLE, RPM_MAX);
 
-  player.lastShiftMessage = 'SHIFT DOWN';
+  player.lastShiftMessage = "SHIFT DOWN";
   player.shiftMessageTimer = 0.7;
 }
 
 function updateGearInput() {
-  
   if (keys.ArrowUp && !shiftUpLocked) {
     shiftUp();
     shiftUpLocked = true;
@@ -492,9 +446,7 @@ function updateGearInput() {
   }
 }
 
-
-
-//Countdown & Perfect launch mechanic 
+//Countdown & Perfect launch mechanic
 
 function updateCountdown(deltaTime) {
   const player = game.player;
@@ -511,38 +463,36 @@ function updateCountdown(deltaTime) {
   player.rpm = clamp(player.rpm, RPM_IDLE, RPM_MAX);
 
   if (game.countdown <= 0) {
-    game.phase = 'race';
+    game.phase = "race";
 
     // Inside updateCountdown, replace the launch logic with this:
     if (isInPerfectRPM(player.rpm)) {
       player.launchBoost = 1.18;
       player.speed = 28;
-      // NEW: Drop RPM to simulate the clutch grabbing. 
+      // NEW: Drop RPM to simulate the clutch grabbing.
       // They must climb from 4500 back to 6200 for the first shift.
-      player.rpm = 4500; 
-      player.launchMessage = 'PERFECT LAUNCH';
+      player.rpm = 4500;
+      player.launchMessage = "PERFECT LAUNCH";
     } else if (player.rpm < PERFECT_RPM_MIN) {
       player.launchBoost = 0.92;
       player.speed = 12;
       // NEW: Engine bogs down heavily on a slow launch
-      player.rpm = 3000; 
-      player.launchMessage = 'SLOW LAUNCH';
+      player.rpm = 3000;
+      player.launchMessage = "SLOW LAUNCH";
     } else {
       player.launchBoost = 0.86;
       player.speed = 8;
       // NEW: Engine chokes on an over-rev (spinning tires)
-      player.rpm = 2500; 
-      player.launchMessage = 'OVER REV';
-    }    
+      player.rpm = 2500;
+      player.launchMessage = "OVER REV";
+    }
     player.launchChecked = true;
     player.shiftMessageTimer = 1.2;
     player.lastShiftMessage = player.launchMessage;
   }
-} 
+}
 
-
-
-// Oppenent Racing Logic 
+// Oppenent Racing Logic
 
 function updateOpponents(deltaTime) {
   game.opponents.forEach(function (opponent) {
@@ -553,13 +503,14 @@ function updateOpponents(deltaTime) {
     if (opponent.rpm >= REDLINE_RPM && opponent.gear < MAX_GEAR) {
       opponent.gear += 1;
       opponent.rpm = 3600;
-      opponent.speed += 15 * opponent.skill; 
+      opponent.speed += 15 * opponent.skill;
     }
 
     opponent.rpm = clamp(opponent.rpm, RPM_IDLE, RPM_MAX);
 
     const rpmPower = (opponent.rpm - RPM_IDLE) / (RPM_MAX - RPM_IDLE);
-    const targetSpeed = rpmPower * 85  * opponent.gear / GEAR_RATIOS[opponent.gear];
+    const targetSpeed =
+      (rpmPower * 85 * opponent.gear) / GEAR_RATIOS[opponent.gear];
 
     opponent.speed += (targetSpeed - opponent.speed) * 2.1 * deltaTime;
     opponent.speed = clamp(opponent.speed, 0, 265);
@@ -581,9 +532,7 @@ function markFinished(car) {
   game.finishCount += 1;
 }
 
-
-
-//N20 Mechanic 
+//N20 Mechanic
 function updateNitrous(deltaTime) {
   const player = game.player;
 
@@ -596,7 +545,7 @@ function updateNitrous(deltaTime) {
     player.nitrous -= 10 * deltaTime;
     player.nitrousUsed += 10 * deltaTime;
 
-    game.cameraShake = 0.20;
+    game.cameraShake = 0.2;
   } else {
     player.nitrousActive = false;
   }
@@ -605,13 +554,12 @@ function updateNitrous(deltaTime) {
   player.nitrousUsed = clamp(player.nitrousUsed, 0, 100);
 }
 
-
-
-//Traffic 
+//Traffic
 function createTrafficCar() {
   const lane = Math.floor(Math.random() * ROAD_LANES);
-  const civilianCars = ['Logan', 'Polo', 'Sandero', 'Corolla', 'Jimny', 'A4'];
-  const randomSprite = civilianCars[Math.floor(Math.random() * civilianCars.length)];
+  const civilianCars = ["Logan", "Polo", "Sandero", "Corolla", "Jimny", "A4"];
+  const randomSprite =
+    civilianCars[Math.floor(Math.random() * civilianCars.length)];
 
   return {
     x: laneCenter(lane),
@@ -619,7 +567,7 @@ function createTrafficCar() {
     width: 56,
     height: 104,
     speed: 90 + Math.random() * 45,
-    spriteName: randomSprite
+    spriteName: randomSprite,
   };
 }
 
@@ -643,15 +591,12 @@ function updateTraffic(deltaTime) {
   });
 }
 
-
-
-
 //collision:Traffic & opponent
 
 function rectanglesCollide(a, b) {
   // Shrink the collision box to 75% of the visual image size
   // This ignores the transparent pixels and side mirrors
-  const shrink = HITBOX_SHRINK; 
+  const shrink = HITBOX_SHRINK;
 
   const aHitWidth = a.width * shrink;
   const aHitHeight = a.height * shrink;
@@ -671,7 +616,7 @@ function damagePlayer() {
   player.rpm = Math.max(RPM_IDLE, player.rpm * 0.55);
   game.cameraShake = 0.35;
 
-  player.lastShiftMessage = 'CRASH';
+  player.lastShiftMessage = "CRASH";
   player.shiftMessageTimer = 0.8;
 }
 
@@ -690,7 +635,7 @@ function checkCollisions() {
   game.opponents.forEach(function (opponent) {
     const opponentScreenCar = {
       ...opponent,
-      y: player.y + (player.distance - opponent.distance) * 0.45
+      y: player.y + (player.distance - opponent.distance) * 0.45,
     };
 
     if (rectanglesCollide(player, opponentScreenCar)) {
@@ -709,8 +654,6 @@ function checkCollisions() {
   });
 }
 
-
-
 // Finish Condtion & Result Screen
 function checkFinish() {
   const player = game.player;
@@ -725,7 +668,7 @@ function checkFinish() {
 }
 
 function finishRace() {
-  game.phase = 'finished';
+  game.phase = "finished";
 
   const player = game.player;
   const positionText = getPositionText(player.position);
@@ -737,11 +680,11 @@ function finishRace() {
   resultNitrousUsed.textContent = `${Math.round(player.nitrousUsed)}%`;
 
   if (player.position === 1) {
-    resultIcon.textContent = '🏆';
-    resultTitle.textContent = 'Race Won';
+    resultIcon.textContent = "🏆";
+    resultTitle.textContent = "Race Won";
   } else {
-    resultIcon.textContent = '🏁';
-    resultTitle.textContent = 'Race Finished';
+    resultIcon.textContent = "🏁";
+    resultTitle.textContent = "Race Finished";
   }
 
   if (animationId !== null) {
@@ -749,13 +692,67 @@ function finishRace() {
     animationId = null;
   }
 
-  showScreen('result');
+  showScreen("result");
 }
 
 function getPositionText(position) {
-  if (position === 1) return '1st';
-  if (position === 2) return '2nd';
-  if (position === 3) return '3rd';
+  if (position === 1) return "1st";
+  if (position === 2) return "2nd";
+  if (position === 3) return "3rd";
 
   return `${position}th`;
+}
+
+// DOM Elements
+const leaderboardBtn = document.getElementById("leaderboardBtn");
+const leaderboardModal = document.getElementById("leaderboardModal");
+const closeLeaderboard = document.getElementById("closeLeaderboard");
+const leaderboardBody = document.getElementById("leaderboardBody");
+
+// UI Toggles
+leaderboardBtn.addEventListener("click", () => {
+  leaderboardModal.classList.remove("hidden");
+  fetchLeaderboard();
+});
+
+closeLeaderboard.addEventListener("click", () => {
+  leaderboardModal.classList.add("hidden");
+});
+
+// Fetch and Render Logic
+async function fetchLeaderboard() {
+  leaderboardBody.innerHTML = '<tr><td colspan="5">Loading times...</td></tr>';
+
+  try {
+    const response = await fetch("http://localhost:3000/scores");
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
+    const scores = data.scores;
+
+    leaderboardBody.innerHTML = ""; // Clear loading text
+
+    if (scores.length === 0) {
+      leaderboardBody.innerHTML =
+        '<tr><td colspan="5">No times recorded yet!</td></tr>';
+      return;
+    }
+
+    // Loop through the data and build the rows
+    scores.forEach((score, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+                <td>#${index + 1}</td>
+                <td>${score.username}</td>
+                <td>${score.race_time}</td>
+                <td>${score.top_speed} km/h</td>
+                <td>${score.perfect_shifts}</td>
+            `;
+      leaderboardBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error);
+    leaderboardBody.innerHTML =
+      '<tr><td colspan="5">Error loading leaderboard.</td></tr>';
+  }
 }

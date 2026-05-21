@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>High Rush - Login</title>
+    <link rel="stylesheet" href="loginstyle.css" />
+  </head>
+  <body>
+    <div id="game-wrapper">
+      <div class="screen active" id="auth-screen">
+        <h1 class="game-title">HIGH RUSH</h1>
+        <p class="eyebrow">ENTER THE GRID</p>
+
+        <div class="result-card">
+          <h2 id="authTitle">LOGIN</h2>
+
+          <div class="input-group">
+            <input
+              type="text"
+              id="usernameInput"
+              class="arcade-input"
+              placeholder="USERNAME"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <input
+              type="password"
+              id="passwordInput"
+              class="arcade-input"
+              placeholder="PASSWORD"
+              required
+            />
+          </div>
+
+          <button id="submitAuthBtn" class="primary-button">LOGIN</button>
+
+          <p id="authMessage" class="auth-msg"></p>
+
+          <p class="toggle-text">
+            <span id="authToggleText">NEED AN ACCOUNT?</span><br /><br />
+            <a href="#" id="toggleAuthMode" class="auth-link">REGISTER HERE</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+  </body>
+</html>
