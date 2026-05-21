@@ -5,6 +5,7 @@ require("dotenv").config();
 
 //import
 const authRoutes = require("./routes/authRoutes.js");
+const leaderBoardRoutes = require("./routes/leaderBoardRoutes.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(authRoutes);
+
+app.use(leaderBoardRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is Running");

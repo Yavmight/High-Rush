@@ -41,9 +41,13 @@ const loginUser = async (username, password) => {
     throw new Error("INVALID_CREDENTIALS");
   }
 
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign(
+    { id: user.id, username: user.username },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1h",
+    },
+  );
 
   return {
     token,
