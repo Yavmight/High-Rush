@@ -39,7 +39,7 @@ const handleLogin = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 60 * 60 * 1000,
     });
 

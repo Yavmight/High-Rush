@@ -667,12 +667,21 @@ function checkFinish() {
   }
 }
 
-function finishRace() {
+async function finishRace() {
+  if (game.phase === "finished") return;
+
   game.phase = "finished";
 
   const player = game.player;
-  const positionText = getPositionText(player.position);
 
+  function getPositionText(position) {
+    if (position === 1) return "1st";
+    if (position === 2) return "2nd";
+    if (position === 3) return "3rd";
+    return `${position}th`;
+  }
+
+  const positionText = getPositionText(player.position);
   resultPosition.textContent = positionText;
   resultTime.textContent = formatTime(player.finishTime);
   resultTopSpeed.textContent = `${Math.round(player.topSpeed)} km/h`;
@@ -693,14 +702,52 @@ function finishRace() {
   }
 
   showScreen("result");
-}
 
-function getPositionText(position) {
-  if (position === 1) return "1st";
-  if (position === 2) return "2nd";
-  if (position === 3) return "3rd";
+  // ==========================================
+  // BACKGROUND LEADERBOARD SAVE
+  // ==========================================
+  const username = localStorage.getItem("high_rush_user");
 
-  return `${position}th`;
+  if (username) {
+    const scorePayload = {
+      race_time: player.finishTime,
+      top_speed: Math.round(player.topSpeed),
+      perfect_shifts: player.perfectShifts,
+    };
+
+    try {
+      const getResponse = await fetch("http://localhost:3000/scores");
+      const data = await getResponse.json();
+      const allScores = data.scores || [];
+
+      const existingScore = allScores.find(
+        (score) => score.username === username,
+      );
+
+      if (existingScore) {
+        if (player.finishTime < existingScore.race_time) {
+          console.log("New Personal Best! Updating...");
+          // FIXED: Added the missing slash before the ID
+          await fetch(`http://localhost:3000/scores/${existingScore.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(scorePayload),
+          });
+        }
+      } else {
+        console.log("First race! Saving new score...");
+        await fetch("http://localhost:3000/scores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(scorePayload),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to save score:", error);
+    }
+  }
 }
 
 // DOM Elements
@@ -738,13 +785,12 @@ async function fetchLeaderboard() {
       return;
     }
 
-    // Loop through the data and build the rows
     scores.forEach((score, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
                 <td>#${index + 1}</td>
                 <td>${score.username}</td>
-                <td>${score.race_time}</td>
+                <td>${formatTime(score.race_time)}</td>
                 <td>${score.top_speed} km/h</td>
                 <td>${score.perfect_shifts}</td>
             `;
