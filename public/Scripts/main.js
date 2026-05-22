@@ -689,10 +689,8 @@ async function finishRace() {
   resultNitrousUsed.textContent = `${Math.round(player.nitrousUsed)}%`;
 
   if (player.position === 1) {
-    resultIcon.textContent = "🏆";
     resultTitle.textContent = "Race Won";
   } else {
-    resultIcon.textContent = "🏁";
     resultTitle.textContent = "Race Finished";
   }
 
@@ -703,9 +701,6 @@ async function finishRace() {
 
   showScreen("result");
 
-  // ==========================================
-  // BACKGROUND LEADERBOARD SAVE
-  // ==========================================
   const username = localStorage.getItem("high_rush_user");
 
   if (username) {
@@ -736,7 +731,7 @@ async function finishRace() {
           });
         }
       } else {
-        console.log("First race! Saving new score...");
+        console.log("First race ! Saving new score...");
         await fetch("http://localhost:3000/scores", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
