@@ -711,7 +711,7 @@ async function finishRace() {
     };
 
     try {
-      const getResponse = await fetch("http://localhost:3000/scores");
+      const getResponse = await fetch("http://127.0.0.1:3000/scores");
       const data = await getResponse.json();
       const allScores = data.scores || [];
 
@@ -722,8 +722,8 @@ async function finishRace() {
       if (existingScore) {
         if (player.finishTime < existingScore.race_time) {
           console.log("New Personal Best! Updating...");
-          // FIXED: Added the missing slash before the ID
-          await fetch(`http://localhost:3000/scores/${existingScore.id}`, {
+
+          await fetch(`http://127.0.0.1:3000${existingScore.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -732,7 +732,7 @@ async function finishRace() {
         }
       } else {
         console.log("First race ! Saving new score...");
-        await fetch("http://localhost:3000/scores", {
+        await fetch("http://127.0.0.1:3000/scores", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -766,7 +766,7 @@ async function fetchLeaderboard() {
   leaderboardBody.innerHTML = '<tr><td colspan="5">Loading times...</td></tr>';
 
   try {
-    const response = await fetch("http://localhost:3000/scores");
+    const response = await fetch("http://127.0.0.1:3000/scores");
     if (!response.ok) throw new Error("Network response was not ok");
 
     const data = await response.json();
