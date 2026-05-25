@@ -1,47 +1,95 @@
-# High Rush 🏁
+# HIGH RUSH 🏁
 
-High Rush is a retro-style, 8-bit 2D drag racing game built with Vanilla JavaScript (HTML5 Canvas) and a custom Node.js/Express backend. Players must master launch control, manual shifting, and traffic dodging to climb the global leaderboard.
+> _A retro 8-bit drag racing game. Master the launch. Nail every shift. Own the leaderboard._
 
-## 🌟 Features
+---
 
-* **Authentic Arcade Feel:** Custom 8-bit UI, retro pixel fonts, and dynamic camera shake effects.
-* **Complex Driving Mechanics:** Features a "Perfect Launch" mini-game, dynamic RPM drops on gear changes, and a manual shifting system where timing is everything.
-* **Traffic & Hazards:** Procedurally generated civilian traffic cars that players must dodge at high speeds.
-* **Nitrous System:** A boost gauge for late-race comebacks.
-* **Full Authentication:** Custom login and registration system with secure session handling.
-* **Global Leaderboard:** Persistent database tracking the Top 10 fastest times, top speeds, and perfect shifts across all registered players.
+## What is High Rush?
 
-## 🛠️ Tech Stack
+High Rush is a top-down, 2D drag racing game built entirely with Vanilla JavaScript and an HTML5 Canvas. It's not just press-and-hold — you manage RPM, time your gear shifts, dodge traffic, and deploy nitrous at the right moment. Every run is tracked on a global leaderboard against all registered players.
 
-**Frontend:**
-* HTML (Canvas API)
-* CSS (Flexbox, Custom Fonts)
-* Vanilla JavaScript (ES6, strictly typed Game Loop)
+---
 
-**Backend:**
-* Node.js
-* Express.js
-* CORS & Cookie-Parser
-* Postgres SQL
-* Render DashBoard
+## Features
 
+- **Perfect Launch System** — Hold the right RPM at the start for a speed advantage off the line
+- **Manual Shifting** — Shift too early or too late and you lose speed; hit the perfect window for a bonus
+- **Dynamic RPM Drops** — Each gear change drops RPM differently, forcing you to manage revs constantly
+- **Traffic Dodging** — Procedurally generated civilian cars at speed
+- **Nitrous Boost** — A gauge that fills during the race for a late push
+- **Global Leaderboard** — Top 10 times, top speeds, and perfect shifts tracked per user
+- **Full Auth System** — Register, log in, sessions handled securely via cookies
 
-## 📁 Project Structure
+---
 
-```text
-├── public/                 # Frontend Static Files
-│   ├── Assets/             # Car sprites and audio files            
+## Tech Stack
+
+| Layer    | Tech                                |
+| -------- | ----------------------------------- |
+| Frontend | HTML5 Canvas, Vanilla JS (ES6), CSS |
+| Backend  | Node.js, Express.js                 |
+| Database | PostgreSQL                          |
+| Auth     | JWT + Cookie-Parser                 |
+| Hosting  | Render                              |
+
+---
+
+## Project Structure
+
+```
+├── public/
+│   ├── Assets/             # Car sprites and audio
 │   ├── index.html          # Main game canvas and UI
-│   ├──login/
-│   ├── login.html          # Frontend API calls for login/register
-│   ├── auth.js             #Authentication gateway  loginstyle.css
-│   └── loginstyle.css      # Login page styling       
-│   ├──scripts/             # Game logic (main.js, graphics.js, config.js)
-│   └──style.css              # Game styling
-│                
-├── routes/                 # Backend API Routes
-│   ├── authRoutes.js       # Handles POST /login and /register
-│   └── leaderBoardRoutes.js# Handles GET, POST, and PUT /scores
-├── server.js               # Express server configuration and routing
-├── package.json            # Node dependencies
-└── .env                    # Environment variables
+│   ├── style.css           # Game styling
+│   ├── scripts/
+│   │   ├── main.js         # Core game loop and mechanics
+│   │   ├── graphics.js     # Rendering and draw calls
+│   │   └── config.js       # Game constants and settings
+│   └── login/
+│       ├── login.html      # Login and registration UI
+│       ├── auth.js         # Frontend auth logic
+│       └── loginstyle.css  # Login page styling
+│
+├── routes/
+│   ├── authRoutes.js       # POST /login, POST /register
+│   └── leaderBoardRoutes.js# GET /scores, POST /scores, PUT /scores/:id
+│
+├── server.js               # Express server setup and middleware
+├── package.json
+└── .env                    # Environment variables (not committed)
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- PostgreSQL database
+- A `.env` file with the following:
+
+```env
+JWT_SECRET=your_secret_here
+DATABASE_URL=your_postgres_connection_string
+```
+
+### Install & Run
+
+```bash
+npm install
+node server.js
+```
+
+Then open `http://127.0.0.1:5500` in your browser (or wherever your frontend is served from).
+
+---
+
+## How to Play
+
+1. **Register or log in**
+2. Select a car and start a race
+3. Hold the RPM in the green zone at launch for a **Perfect Launch**
+4. Shift up manually — timing the green RPM window gives you a **Perfect Shift** bonus
+5. Dodge traffic and use nitrous near the finish line
+6. Your time is saved automatically — check the leaderboard to see where you rank
