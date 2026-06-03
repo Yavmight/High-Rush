@@ -1,8 +1,22 @@
 "use strict";
+async function checkLogin() {
+  try {
+    const response = await fetch("http://127.0.0.1:3000/profile", {
+      credentials: "include",
+    });
 
-if (!localStorage.getItem("high_rush_user")) {
-  window.location.href = "/login.html";
+    if (response.status === 200) return true;
+    else {
+      window.location.href = "./login/login.html";
+      return false;
+    }
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 }
+
+checkLogin();
 
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
@@ -231,7 +245,10 @@ let animationId = null;
 let lastFrameTime = 0;
 
 // Start Game & Game Loop
-function startGame() {
+async function startGame() {
+  const allowed = await checkLogin();
+  if (!allowed) return;
+
   keys.KeyW = false;
   keys.KeyS = false;
   keys.KeyA = false;
@@ -255,13 +272,13 @@ function startGame() {
   animationId = requestAnimationFrame(gameLoop);
 }
 
-function gameLoop(currentTime) {
+async function gameLoop(currentTime) {
   if (!game || game.phase === "finished") return;
 
   const deltaTime = Math.min((currentTime - lastFrameTime) / 1000, 0.05);
   lastFrameTime = currentTime;
 
-  updateGame(deltaTime);
+  await updateGame(deltaTime);
 
   if (game.phase === "finished") return;
 
@@ -270,7 +287,7 @@ function gameLoop(currentTime) {
   animationId = requestAnimationFrame(gameLoop);
 }
 
-function updateGame(deltaTime) {
+async function updateGame(deltaTime) {
   if (game.phase === "countdown") {
     updateCountdown(deltaTime);
   } else if (game.phase === "race") {
@@ -284,7 +301,7 @@ function updateGame(deltaTime) {
     updateTraffic(deltaTime);
     checkCollisions();
 
-    checkFinish();
+    await checkFinish();
 
     if (game.player.shiftMessageTimer > 0) {
       game.player.shiftMessageTimer -= deltaTime;
@@ -655,7 +672,7 @@ function checkCollisions() {
 }
 
 // Finish Condtion & Result Screen
-function checkFinish() {
+async function checkFinish() {
   const player = game.player;
 
   if (player.distance >= RACE_DISTANCE && !player.finished) {
@@ -663,12 +680,15 @@ function checkFinish() {
   }
 
   if (player.finished) {
-    finishRace();
+    await finishRace();
   }
 }
 
 async function finishRace() {
   if (game.phase === "finished") return;
+
+  const allowed = await checkLogin();
+  if (!allowed) return;
 
   game.phase = "finished";
 
@@ -711,8 +731,11 @@ async function finishRace() {
     };
 
     try {
-      const getResponse = await fetch("http://127.0.0.1:3000/scores");
+      const getResponse = await fetch("http://127.0.0.1:3000/scores", {
+        credentials: "include",
+      });
       const data = await getResponse.json();
+      console.log(data);
       const allScores = data.scores || [];
 
       const existingScore = allScores.find(
@@ -723,7 +746,7 @@ async function finishRace() {
         if (player.finishTime < existingScore.race_time) {
           console.log("New Personal Best! Updating...");
 
-          await fetch(`http://127.0.0.1:3000${existingScore.id}`, {
+          await fetch(`http://127.0.0.1:3000/scores/${existingScore.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -752,7 +775,10 @@ const closeLeaderboard = document.getElementById("closeLeaderboard");
 const leaderboardBody = document.getElementById("leaderboardBody");
 
 // UI Toggles
-leaderboardBtn.addEventListener("click", () => {
+leaderboardBtn.addEventListener("click", async () => {
+  const allowed = await checkLogin();
+  if (!allowed) return;
+
   leaderboardModal.classList.remove("hidden");
   fetchLeaderboard();
 });
@@ -763,10 +789,15 @@ closeLeaderboard.addEventListener("click", () => {
 
 // Fetch and Render Logic
 async function fetchLeaderboard() {
+  const allowed = await checkLogin();
+  if (!allowed) return;
+
   leaderboardBody.innerHTML = '<tr><td colspan="5">Loading times...</td></tr>';
 
   try {
-    const response = await fetch("http://127.0.0.1:3000/scores");
+    const response = await fetch("http://127.0.0.1:3000/scores", {
+      credentials: "include",
+    });
     if (!response.ok) throw new Error("Network response was not ok");
 
     const data = await response.json();
@@ -779,7 +810,7 @@ async function fetchLeaderboard() {
         '<tr><td colspan="5">No times recorded yet!</td></tr>';
       return;
     }
-
+    scores.sort((a, b) => a.race_time - b.race_time);
     scores.forEach((score, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `

@@ -68,4 +68,11 @@ const logoutUser = (req, res) => {
   });
 };
 
-module.exports = { handleLogin, registerUser, logoutUser };
+const getUser = (req, res) => {
+  return res.status(200).json({
+    username: req.user.username,
+    id: req.user.id,
+  });
+};
+
+module.exports = { handleLogin, registerUser, logoutUser, getUser };
