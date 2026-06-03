@@ -34,6 +34,25 @@ High Rush is a top-down, 2D drag racing game built entirely with Vanilla JavaScr
 
 ---
 
+---
+
+## Live Demo
+
+**High Rush is deployed and can be played online here no installation is required.: **
+
+---
+
+
+
+## How to Play
+
+1. **Register or log in**
+2.  start a race
+3. Hold the RPM in the green zone at launch for a **Perfect Launch**
+4. Shift up manually — timing the green RPM window gives you a **Perfect Shift** bonus
+5. Dodge traffic and use nitrous near the finish line
+
+
 ## Project Structure
 
 ```
@@ -61,35 +80,26 @@ High Rush is a top-down, 2D drag racing game built entirely with Vanilla JavaScr
 
 ---
 
-## Getting Started
+## Running the Project Locally
 
-### Prerequisites
+**This section is only needed for developers who want to run or modify the project on their own machine.**
+
+**Requirements:**
 
 - Node.js
 - PostgreSQL database
-- A `.env` file with the following:
+- Environment variables configured locally
 
-```env
+The project uses environment variables for sensitive settings such as the JWT secret and database connection string. These values are not included in the GitHub repository for security reasons.
+
+Create a local .env file in the root folder and add your own values:
+
 JWT_SECRET=your_secret_here
 DATABASE_URL=your_postgres_connection_string
-```
 
-### Install & Run
+Then install dependencies and start the server:
 
-```bash
 npm install
 node server.js
-```
 
-Then open `http://127.0.0.1:5500` in your browser (or wherever your frontend is served from).
-
----
-
-## How to Play
-
-1. **Register or log in**
-2. Select a car and start a race
-3. Hold the RPM in the green zone at launch for a **Perfect Launch**
-4. Shift up manually — timing the green RPM window gives you a **Perfect Shift** bonus
-5. Dodge traffic and use nitrous near the finish line
-6. Your time is saved automatically — check the leaderboard to see where you rank
+The backend will run locally, and the frontend can be opened through your local development server.
