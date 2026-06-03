@@ -24,7 +24,10 @@
           <nav class="menu-buttons">
             <button id="btn-start" class="primary-button">Start Race</button>
             <button id="btn-controls" class="secondary-button">Controls</button>
-            <button id="leaderboardBtn" class="secondary-button">View Leaderboard</button>
+            <button id="leaderboardBtn" class="secondary-button">
+              View Leaderboard
+            </button>
+            <button id="btn-logout" class="secondary-button">Logout</button>
           </nav>
         </div>
       </section>
@@ -104,6 +107,21 @@
           Your browser does not support HTML5 Canvas.
         </canvas>
       </section>
+
+      <div id="pause-menu" class="pause-menu hidden">
+        <div class="pause-card">
+          <h2>Paused</h2>
+          <button id="btn-pause-continue" class="primary-button">
+            Continue
+          </button>
+          <button id="btn-pause-restart" class="secondary-button">
+            Restart
+          </button>
+          <button id="btn-pause-menu" class="secondary-button">
+            Exit to Main Menu
+          </button>
+        </div>
+      </div>
 
       <section id="screen-result" class="screen">
         <div class="result-card">

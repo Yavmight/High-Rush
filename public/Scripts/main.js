@@ -30,6 +30,12 @@ const gotItButton = document.getElementById("btn-got-it");
 const retryButton = document.getElementById("btn-retry");
 const menuButton = document.getElementById("btn-menu");
 
+const logoutButton = document.getElementById("btn-logout");
+const pauseMenu = document.getElementById("pause-menu");
+const pauseContinueButton = document.getElementById("btn-pause-continue");
+const pauseRestartButton = document.getElementById("btn-pause-restart");
+const pauseMenuButton = document.getElementById("btn-pause-menu");
+
 const resultIcon = document.getElementById("result-rank-icon");
 const resultTitle = document.getElementById("result-title");
 const resultPosition = document.getElementById("result-position");
@@ -91,18 +97,40 @@ retryButton.addEventListener("click", function () {
 });
 
 menuButton.addEventListener("click", function () {
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-  showScreen("menu");
+  exitToMainMenu();
 });
+
+logoutButton.addEventListener("click", async function () {
+  try {
+    await fetch("http://127.0.0.1:3000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    localStorage.removeItem("high_rush_user");
+    window.location.href = "./login/login.html";
+  }
+});
+
+pauseContinueButton.addEventListener("click", resumeGame);
+pauseRestartButton.addEventListener("click", startGame);
+pauseMenuButton.addEventListener("click", exitToMainMenu);
 
 const keys = {};
 let shiftUpLocked = false;
 let shiftDownLocked = false;
 
 window.addEventListener("keydown", function (event) {
+  if (event.code === "Escape") {
+    event.preventDefault();
+    togglePause();
+    return;
+  }
+
+  if (isPaused) return;
+
   keys[event.code] = true;
 
   if (event.code === "KeyR" && game) {
@@ -243,19 +271,70 @@ function createGameState() {
 let game = null;
 let animationId = null;
 let lastFrameTime = 0;
+let isPaused = false;
+
+function clearInputKeys() {
+  Object.keys(keys).forEach(function (key) {
+    keys[key] = false;
+  });
+}
+
+function pauseGame() {
+  if (!game || isPaused || game.phase === "finished") return;
+
+  isPaused = true;
+  clearInputKeys();
+  pauseMenu.classList.remove("hidden");
+  raceMusic.pause();
+
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+}
+
+function resumeGame() {
+  if (!game || !isPaused) return;
+
+  isPaused = false;
+  pauseMenu.classList.add("hidden");
+  raceMusic.play().catch((e) => {});
+  lastFrameTime = performance.now();
+  animationId = requestAnimationFrame(gameLoop);
+}
+
+function togglePause() {
+  if (!game || game.phase === "finished") return;
+
+  if (isPaused) {
+    resumeGame();
+  } else {
+    pauseGame();
+  }
+}
+
+function exitToMainMenu() {
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  isPaused = false;
+  pauseMenu.classList.add("hidden");
+  clearInputKeys();
+  game = null;
+  showScreen("menu");
+}
 
 // Start Game & Game Loop
 async function startGame() {
   const allowed = await checkLogin();
   if (!allowed) return;
 
-  keys.KeyW = false;
-  keys.KeyS = false;
-  keys.KeyA = false;
-  keys.KeyD = false;
-  keys.KeyE = false;
-  keys.ShiftLeft = false;
-  keys.ControlLeft = false;
+  isPaused = false;
+  pauseMenu.classList.add("hidden");
+
+  clearInputKeys();
 
   shiftUpLocked = false;
   shiftDownLocked = false;
@@ -273,7 +352,7 @@ async function startGame() {
 }
 
 async function gameLoop(currentTime) {
-  if (!game || game.phase === "finished") return;
+  if (!game || isPaused || game.phase === "finished") return;
 
   const deltaTime = Math.min((currentTime - lastFrameTime) / 1000, 0.05);
   lastFrameTime = currentTime;
